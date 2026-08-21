@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafío Soporte CET - PUMM</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="games-body">
+
+  <div class="game-wrapper">
+    <header class="game-header">
+      <h2 id="game-title">CARGANDO DESAFÍO...</h2>
+      <p id="game-instruction"></p>
+    </header>
+
+    <!-- JUEGO 1: CABLES -->
+    <div id="game-cables" style="display: none;">
+      <div class="cables-container">
+        <div class="cables-column">
+          <h3>CABLES</h3>
+          <div class="wire-item" data-color="red" style="color: #ff5f56;">🔴 CABLE ROJO</div>
+          <div class="wire-item" data-color="blue" style="color: #58a6ff;">🔵 CABLE AZUL</div>
+          <div class="wire-item" data-color="green" style="color: #7ee787;">🟢 CABLE VERDE</div>
+        </div>
+        <div class="cables-column">
+          <h3>PUERTOS</h3>
+          <div class="port-item" data-color="blue">PUERTO B-01 <span class="status">DESCONECTADO</span></div>
+          <div class="port-item" data-color="red">PUERTO A-01 <span class="status">DESCONECTADO</span></div>
+          <div class="port-item" data-color="green">PUERTO C-01 <span class="status">DESCONECTADO</span></div>
+        </div>
+      </div>
+      <button class="action-btn" onclick="validateCables()">VERIFICAR CONEXIONES</button>
+    </div>
+
+    <!-- JUEGO 2: BINARIO -->
+    <div id="game-binary" style="display: none;">
+      <div class="counter-box">ANOMALÍAS DETECTADAS: <span id="anomaly-count">0</span></div>
+      <div class="binary-grid" id="binary-grid"></div>
+      <button class="action-btn" onclick="validateBinary()">ENVIAR DIAGNÓSTICO</button>
+    </div>
+
+    <!-- JUEGO 3: SECUENCIA -->
+    <div id="game-sequence" style="display: none;">
+      <div class="sequence-grid" id="sequence-grid"></div>
+      <button class="action-btn" onclick="validateSequence()">ORDENAR MÓDULOS</button>
+    </div>
+
+    <p class="game-error" id="game-error-msg"></p>
+  </div>
+
+  <script src="games.js"></script>
+</body>
+</html>
