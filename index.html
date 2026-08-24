@@ -81,7 +81,7 @@
           <!-- FASE 1 -->
           <div class="challenge-screen active" id="screen-1">
             <h2>🔒 FASE 01: ACCEDER AL SISTEMA</h2>
-            <p class="instruction">Buscá en la sala la credencial e investigá los detalles ocultos con la lupa.</p>
+            <p class="instruction"></p>
             <div class="input-group">
               <input type="text" id="code-1" placeholder="CÓDIGO DE ACCESO..." autocomplete="off">
               <button onclick="checkCode(1, 'ID_8032')">INGRESAR</button>
@@ -89,32 +89,69 @@
             <p class="error-msg" id="error-1"></p>
           </div>
 
-          <!-- FASE 2 -->
-          <div class="challenge-screen" id="screen-2">
-            <h2>🔍 FASE 02: LOCALIZAR LA FALLA</h2>
-            <p class="instruction">Ingresá el nombre del servidor crítico afectado.</p>
-            <div class="input-group">
-              <input type="text" id="code-2" placeholder="NOMBRE DEL SERVIDOR..." autocomplete="off">
-              <button onclick="checkCode(2, 'SERVIDOR_CORE')">CONFIRMAR</button>
+        <!-- FASE 2 -->
+        <div class="challenge-screen" id="screen-2">
+          <h2>🔍 FASE 02: LOCALIZAR LA FALLA</h2>
+          <p class="instruction">Ingrese el nombre del servidor crítico afectado.</p>
+
+          <!-- Consola Símbolo de Sistema (Estática) -->
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+              <span class="terminal-title">cmd.exe - System Diagnostic Log</span>
             </div>
-            <p class="error-msg" id="error-2"></p>
+            <div class="terminal-body">
+              <p>> SYSTEM DIAGNOSTIC RUNNING...</p>
+              <p>> CHECKING SERVER NODES...</p>
+              <p>> NODE_01: ONLINE [OK]</p>
+              <p>> SERVIDOR_CORE: CRITICAL_FAIL - CORRUPTED SECTOR AT 0x88F</p>
+              <p>> NODE_03: ONLINE [OK]</p>
+              <p>> ENTER RESOLUTION KEY TO PROCEED...</p>
+            </div>
           </div>
 
-          <!-- FASE 3 -->
-          <div class="challenge-screen" id="screen-3">
-            <h2>💡 FASE 03: ANALIZAR EVIDENCIAS</h2>
-            <p class="instruction">Identificá la acción sospechosa ejecutada en la terminal.</p>
-            <div class="input-group">
-              <input type="text" id="code-3" placeholder="ACCIÓN EJECUTADA..." autocomplete="off">
-              <button onclick="checkCode(3, 'UPDATE_UNVERIFIED')">VALIDAR</button>
-            </div>
-            <p class="error-msg" id="error-3"></p>
+          <div class="input-group">
+            <input type="text" id="code-2" placeholder="NOMBRE DEL SERVIDOR..." autocomplete="off">
+            <button onclick="checkCode(2, 'SERVIDOR_CORE')">CONFIRMAR</button>
           </div>
+          <p class="error-msg" id="error-2"></p>
+        </div>
+
+        <!-- FASE 3 -->
+        <div class="challenge-screen" id="screen-3">
+          <h2>💡 FASE 03: ANALIZAR EVIDENCIAS</h2>
+          <p class="instruction">Identifique la acción sospechosa ejecutada en la terminal.</p>
+
+          <!-- Consola Símbolo de Sistema (Estática) -->
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+              <span class="terminal-title">cmd.exe - Audit Event Viewer</span>
+            </div>
+            <div class="terminal-body">
+              <p>> LOG EVENT 14:30:12 - USER_ADMIN LOGGED IN</p>
+              <p>> LOG EVENT 14:31:00 - BACKUP_SCHEDULED [SUCCESS]</p>
+              <p>> LOG EVENT 14:32:45 - EXECUTE: UPDATE_UNVERIFIED [ALERT: NO CHECKSUM]</p>
+              <p>> LOG EVENT 14:35:00 - CONNECTION TERMINATED</p>
+              <p>> ENTER TARGET ACTION TO PROCEED...</p>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="code-3" placeholder="ACCIÓN EJECUTADA..." autocomplete="off">
+            <button onclick="checkCode(3, 'UPDATE_UNVERIFIED')">VALIDAR</button>
+          </div>
+          <p class="error-msg" id="error-3"></p>
+        </div>
 
           <!-- FASE 4 -->
           <div class="challenge-screen" id="screen-4">
             <h2>🛠️ FASE 04: RESTAURACIÓN</h2>
-            <p class="instruction">Ingresá la contraseña final descubierta.</p>
+            <p class="instruction">Contraseña de restauración.</p>
             <div class="input-group">
               <input type="password" id="code-4" placeholder="••••••••••••" autocomplete="off">
               <button onclick="checkCode(4, 'PUMM2026RESTORE')">RESTAURAR SISTEMA</button>
@@ -126,17 +163,21 @@
           <div class="challenge-screen" id="screen-success">
             <h1 class="success-title">🎉 ¡SISTEMA PUMM RESTAURADO CON ÉXITO!</h1>
             <p class="instruction">
-              ¡Lo lograron! Gracias a su trabajo en equipo, pensamiento analítico y colaboración, lograron resolver los incidentes y recuperar la red de soporte. En este desafío aplicaron los pilares de <strong>Design Thinking</strong> para investigar, identificar la falla, analizar datos y ejecutar la solución.
+              ¡Lo lograron! Gracias a su trabajo en equipo, pensamiento analítico y colaboración, lograron resolver los incidentes y recuperar la red de soporte.
             </p>
             <div class="postit-instructions">
-              <h3>📌 ÚLTIMO PASO: DECISIONES PREVENTIVAS</h3>
-              <p>Para cerrar la restauración y evitar futuros ataques, respondan en equipo:</p>
-              <ul>
-                <li>1. ¿Qué medida de seguridad propondrían para la credencial de acceso?</li>
-                <li>2. ¿Cómo asegurarían que las actualizaciones del servidor sean verificadas?</li>
-                <li>3. ¿Qué regla de trabajo en equipo fue clave para resolver la sala?</li>
-              </ul>
-              <p class="postit-callout">✍️ <strong>Anoten sus 3 decisiones preventivas en un Post-it y entréguenselo a su Embajadora CET.</strong></p>
+              <h3>📌 DESAFÍO FINAL DE CIBERSEGURIDAD</h3>
+              <p>Analicen las siguientes 5 opciones de seguridad y elijan las <strong>3 correctas / mejores</strong> para proteger la red de ahora en adelante:</p>
+              
+              <ol class="cyber-options">
+                <li><strong>A)</strong> Utilizar autenticación de doble factor (2FA) y contraseñas robustas no compartidas.</li>
+                <li><strong>B)</strong> Guardar las credenciales en un archivo txt sin cifrar en el escritorio para acceso rápido.</li>
+                <li><strong>C)</strong> Ejecutar solo actualizaciones de software que provengan de fuentes verificadas y oficiales.</li>
+                <li><strong>D)</strong> Desactivar el firewall para que la red funcione más rápido sin interrupciones.</li>
+                <li><strong>E)</strong> Verificar la autenticidad e integridad de los accesos antes de otorgar permisos de administrador.</li>
+              </ol>
+
+              <p class="postit-callout">✍️ <strong>Anoten las 3 letras elegidas en un Post-it y entréguenselo a su Embajadora CET.</strong></p>
             </div>
           </div>
 
@@ -144,17 +185,21 @@
           <div class="challenge-screen" id="screen-timeout">
             <h1 class="timeout-title">⏰ ¡TIEMPO AGOTADO! EL SISTEMA SE BLOQUEÓ</h1>
             <p class="instruction">
-              ¡No se desanimen! El trabajo bajo presión en tecnología es un aprendizaje constante. Lo más importante del <strong>Design Thinking</strong> no es llegar primeros, sino iterar, aprender de los errores y colaborar en equipo para encontrar mejores soluciones.
+              ¡No se desanimen! El trabajo bajo presión en tecnología es un aprendizaje constante. Lo más importante es analizar lo sucedido, iterar y prevenir futuros fallos.
             </p>
             <div class="postit-instructions">
-              <h3>📌 DESAFÍO FINAL DE APRENDIZAJE</h3>
-              <p>Aunque el tiempo haya terminado, el aprendizaje continúa. Analicen lo sucedido y respondan:</p>
-              <ul>
-                <li>1. ¿En qué etapa del proceso (Empatizar, Definir, Idear o Prototipar) se trabaron más y por qué?</li>
-                <li>2. ¿Qué estrategia de comunicación en equipo mejorarían para la próxima?</li>
-                <li>3. ¿Qué acción preventiva proponen para evitar que vuelva a ocurrir este bloqueo?</li>
-              </ul>
-              <p class="postit-callout">✍️ <strong>Anoten sus 3 respuestas/decisiones en un Post-it y entréguenselo a su Embajadora CET.</strong></p>
+              <h3>📌 DESAFÍO FINAL DE CIBERSEGURIDAD</h3>
+              <p>Aunque el tiempo haya terminado, el aprendizaje continúa. Analicen las siguientes 5 opciones de seguridad y elijan las <strong>3 correctas / mejores</strong> para evitar futuros bloqueos:</p>
+              
+              <ol class="cyber-options">
+                <li><strong>A)</strong> Utilizar autenticación de doble factor (2FA) y contraseñas robustas no compartidas.</li>
+                <li><strong>B)</strong> Guardar las credenciales en un archivo txt sin cifrar en el escritorio para acceso rápido.</li>
+                <li><strong>C)</strong> Ejecutar solo actualizaciones de software que provengan de fuentes verificadas y oficiales.</li>
+                <li><strong>D)</strong> Desactivar el firewall para que la red funcione más rápido sin interrupciones.</li>
+                <li><strong>E)</strong> Verificar la autenticidad e integridad de los accesos antes de otorgar permisos de administrador.</li>
+              </ol>
+
+              <p class="postit-callout">✍️ <strong>Anoten las 3 letras elegidas en un Post-it y entréguenselo a su Embajadora CET.</strong></p>
             </div>
           </div>
         </section>

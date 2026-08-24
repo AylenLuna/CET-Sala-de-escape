@@ -1,53 +1,14 @@
-// Leer cuál juego se solicitó desde la URL
-const urlParams = new URLSearchParams(window.location.search);
-const requestedGame = urlParams.get('game');
-
-const gamesMap = {
-  '1': 'cables',
-  '2': 'binary',
-  '3': 'sequence'
-};
-
-const gamesList = ['cables', 'binary', 'sequence'];
-let activeGame = gamesMap[requestedGame] || gamesList[Math.floor(Math.random() * gamesList.length)];
-
-// Al cargar la página
-window.addEventListener('DOMContentLoaded', () => {
-  setupGame(activeGame);
-});
-
-function setupGame(gameType) {
-  const cableElem = document.getElementById('game-cables');
-  const binaryElem = document.getElementById('game-binary');
-  const seqElem = document.getElementById('game-sequence');
-
-  if (cableElem) cableElem.style.display = 'none';
-  if (binaryElem) binaryElem.style.display = 'none';
-  if (seqElem) seqElem.style.display = 'none';
-
-  if (gameType === 'cables') {
-    if (cableElem) cableElem.style.display = 'block';
-    document.getElementById('game-title').textContent = '🔌 CONEXIÓN DE HARDWARE';
-    document.getElementById('game-instruction').textContent = 'Conectá cada cable con su puerto correspondiente haciendo clic en el cable y luego en el puerto.';
-    initCablesGame();
-  } else if (gameType === 'binary') {
-    if (binaryElem) binaryElem.style.display = 'block';
-    document.getElementById('game-title').textContent = '👾 DEPURACIÓN DE MEMORIA BINARIA';
-    document.getElementById('game-instruction').textContent = 'Detectamos sectores corruptos en el código. Hacé clic en los símbolos extraños para reparar los bits.';
-    initBinaryGame();
-  } else if (gameType === 'sequence') {
-    if (seqElem) seqElem.style.display = 'block';
-    document.getElementById('game-title').textContent = '🧩 ALINEACIÓN DE SECUENCIA';
-    document.getElementById('game-instruction').textContent = 'Ordená los módulos del 1 al 4 haciendo clic sobre dos bloques para intercambiar sus posiciones.';
-    initSequenceGame();
-  }
-}
-
 /* ==========================================
-   JUEGO 1: CABLES INTERACTIVOS
+   JUEGO 1: CABLES 
 ========================================== */
 let selectedWire = null;
 let connections = {};
+
+const colorNamesEs = {
+  red: 'ROJO',
+  green: 'VERDE',
+  blue: 'AZUL'
+};
 
 function initCablesGame() {
   const wires = document.querySelectorAll('.wire-item');
@@ -67,7 +28,8 @@ function initCablesGame() {
         const portColor = port.getAttribute('data-color');
         connections[selectedWire] = portColor;
         
-        port.querySelector('.status').textContent = `CONECTADO (${selectedWire.toUpperCase()})`;
+        // Muestra el nombre en español del cable conectado sin regalar R/G/B
+        port.querySelector('.status').textContent = `CONECTADO (${colorNamesEs[selectedWire]})`;
         port.classList.add('connected');
         
         wires.forEach(w => w.classList.remove('active-selection'));
@@ -78,19 +40,20 @@ function initCablesGame() {
 }
 
 function validateCables() {
+  // Validación estricta R -> Canal R (red), G -> Canal G (green), B -> Canal B (blue)
   const isCorrect = connections['red'] === 'red' && 
-                    connections['blue'] === 'blue' && 
-                    connections['green'] === 'green';
+                    connections['green'] === 'green' && 
+                    connections['blue'] === 'blue';
 
   if (isCorrect) {
     completeMinigame("PISTA REVELADA: Miren con la lupa la credencial del equipo técnico, el ID tiene detalles impresos en rojo.");
   } else {
-    showError("❌ Las conexiones son incorrectas. Asegurate de conectar cada cable a su puerto correcto.");
+    showError("❌ Conexión incorrecta. Sincronizá cada cable con su puerto de canal correspondiente.");
   }
 }
 
 /* ==========================================
-   JUEGO 2: ANOMALÍAS BINARIAS
+   JUEGO 2: ANOMALÍAS BINARIAS (OCULTAS)
 ========================================== */
 let totalAnomalies = 0;
 
@@ -98,22 +61,22 @@ function initBinaryGame() {
   const grid = document.getElementById('binary-grid');
   if (!grid) return;
   grid.innerHTML = '';
-  const anomalies = ['#', '$', '@', 'X', '8', '&', '%'];
+  const anomalies = ['#', '$', '@', 'X', '8', '&', '%', 'Z'];
   totalAnomalies = 0;
 
   for (let i = 0; i < 30; i++) {
     const bit = document.createElement('div');
-    bit.className = 'bit-cell';
+    bit.className = 'bit-cell'; // Apariencia estándar para todos sin regalar rojo
     
     if (Math.random() < 0.25 && totalAnomalies < 6) {
       bit.textContent = anomalies[Math.floor(Math.random() * anomalies.length)];
-      bit.classList.add('anomaly');
+      bit.dataset.isAnomaly = "true";
       totalAnomalies++;
       
       bit.addEventListener('click', () => {
-        if (bit.classList.contains('anomaly')) {
+        if (bit.dataset.isAnomaly === "true") {
           bit.textContent = Math.random() < 0.5 ? '0' : '1';
-          bit.classList.remove('anomaly');
+          bit.dataset.isAnomaly = "false";
           bit.classList.add('repaired');
           totalAnomalies--;
           updateAnomalyCounter();
@@ -134,15 +97,17 @@ function initBinaryGame() {
 }
 
 function updateAnomalyCounter() {
-  const cnt = document.getElementById('anomaly-count');
-  if (cnt) cnt.textContent = totalAnomalies;
+  const countElem = document.getElementById('anomaly-count');
+  if (countElem) {
+    countElem.textContent = totalAnomalies;
+  }
 }
 
 function validateBinary() {
   if (totalAnomalies === 0) {
-    completeMinigame("PISTA REVELADA: El servidor afectado está parpadeando en la interfaz central. Su código termina en _CORE.");
+    completeMinigame("PISTA REVELADA: El servidor afectado reporta la falla en el nodo SERVIDOR_CORE.");
   } else {
-    showError(`❌ Todavía quedan ${totalAnomalies} anomalías sin corregir en el panel.`);
+    showError(`❌ Aún quedan ${totalAnomalies} anomalías detectadas en el sistema.`);
   }
 }
 
@@ -213,3 +178,40 @@ function completeMinigame(hintText) {
   }
   window.location.href = "index.html";
 }
+
+/* ==========================================
+   INICIALIZADOR DE JUEGOS SEGÚN LA URL
+========================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const gameId = urlParams.get('game') || '1';
+
+  const titleElem = document.getElementById('game-title');
+  const instructionElem = document.getElementById('game-instruction');
+
+  // Ocultar todos los minijuegos al arrancar
+  const gameCables = document.getElementById('game-cables');
+  const gameBinary = document.getElementById('game-binary');
+  const gameSequence = document.getElementById('game-sequence');
+
+  if (gameCables) gameCables.style.display = 'none';
+  if (gameBinary) gameBinary.style.display = 'none';
+  if (gameSequence) gameSequence.style.display = 'none';
+
+  if (gameId === '1' && gameCables) {
+    titleElem.textContent = '🔌 DESAFÍO 01: CONEXIÓN DE CABLES';
+    instructionElem.textContent = 'Seleccioná un cable y luego hacé clic en su puerto correspondiente para conectarlo.';
+    gameCables.style.display = 'block';
+    initCablesGame();
+  } else if (gameId === '2' && gameBinary) {
+    titleElem.textContent = '👾 DESAFÍO 02: ANOMALÍAS EN MEMORIA';
+    instructionElem.textContent = 'Encontrá y corregí los caracteres extraños dentro de la grilla binaria para reparar el módulo.';
+    gameBinary.style.display = 'block';
+    initBinaryGame();
+  } else if (gameId === '3' && gameSequence) {
+    titleElem.textContent = '🧩 DESAFÍO 03: SECUENCIA DE MÓDULOS';
+    instructionElem.textContent = 'Ordená los módulos del 01 al 04 haciendo clic en dos bloques para intercambiar sus posiciones.';
+    gameSequence.style.display = 'block';
+    initSequenceGame();
+  }
+});

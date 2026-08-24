@@ -14,24 +14,24 @@
       <p id="game-instruction"></p>
     </header>
 
-    <!-- JUEGO 1: CABLES -->
-    <div id="game-cables" style="display: none;">
-      <div class="cables-container">
-        <div class="cables-column">
-          <h3>CABLES</h3>
-          <div class="wire-item" data-color="red" style="color: #ff5f56;">🔴 CABLE ROJO</div>
-          <div class="wire-item" data-color="blue" style="color: #58a6ff;">🔵 CABLE AZUL</div>
-          <div class="wire-item" data-color="green" style="color: #7ee787;">🟢 CABLE VERDE</div>
+      <!-- JUEGO 1: CABLES -->
+      <div id="game-cables" style="display: none;">
+        <div class="cables-container">
+          <div class="cables-column">
+            <h3>CANAL COLOR</h3>
+            <div class="wire-item" data-color="red" style="color: #ff5f56;">🔴 CABLE ROJO</div>
+            <div class="wire-item" data-color="green" style="color: #7ee787;">🟢 CABLE VERDE</div>
+            <div class="wire-item" data-color="blue" style="color: #58a6ff;">🔵 CABLE AZUL</div>
+          </div>
+          <div class="cables-column">
+            <h3>PUERTOS DE MÓDULO</h3>
+            <div class="port-item" data-color="green">PUERTO CANAL G <span class="status">DESCONECTADO</span></div>
+            <div class="port-item" data-color="red">PUERTO CANAL R <span class="status">DESCONECTADO</span></div>
+            <div class="port-item" data-color="blue">PUERTO CANAL B <span class="status">DESCONECTADO</span></div>
+          </div>
         </div>
-        <div class="cables-column">
-          <h3>PUERTOS</h3>
-          <div class="port-item" data-color="blue">PUERTO B-01 <span class="status">DESCONECTADO</span></div>
-          <div class="port-item" data-color="red">PUERTO A-01 <span class="status">DESCONECTADO</span></div>
-          <div class="port-item" data-color="green">PUERTO C-01 <span class="status">DESCONECTADO</span></div>
-        </div>
+        <button class="action-btn" onclick="validateCables()">VERIFICAR CONEXIONES</button>
       </div>
-      <button class="action-btn" onclick="validateCables()">VERIFICAR CONEXIONES</button>
-    </div>
 
     <!-- JUEGO 2: BINARIO -->
     <div id="game-binary" style="display: none;">

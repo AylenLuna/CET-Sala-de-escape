@@ -522,3 +522,57 @@ button:hover { background-color: #2ea043; }
   color: #ff7b72;
   margin-bottom: 15px;
 }
+
+/* CONSOLA DE SÍMBOLO DE SISTEMA */
+.terminal-box {
+  background-color: #000000;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.terminal-header {
+  background-color: #161b22;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #30363d;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.terminal-title {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-left: 10px;
+}
+
+.terminal-body {
+  padding: 15px;
+  color: #00ff00;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.terminal-body p {
+  margin: 0;
+}
+
+.cyber-options {
+  text-align: left;
+  margin: 15px 0 15px 20px;
+  line-height: 1.6;
+  font-size: 0.9rem;
+  color: #c9d1d9;
+}
+
+.cyber-options li {
+  margin-bottom: 8px;
+}
