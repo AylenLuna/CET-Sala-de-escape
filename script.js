@@ -5,7 +5,13 @@ let timeRemaining = localStorage.getItem("pumm_timer") !== null
   ? parseInt(localStorage.getItem("pumm_timer")) 
   : DEFAULT_TIME;
 
-let isTimerRunning = localStorage.getItem("pumm_timer_running") === "true";
+// Si no está definido previamente en localStorage, arranca en TRUE (en marcha)
+let isTimerRunning = localStorage.getItem("pumm_timer_running") !== null 
+  ? localStorage.getItem("pumm_timer_running") === "true" 
+  : true;
+
+// Guardar el estado inicial para mantener coherencia
+localStorage.setItem("pumm_timer_running", isTimerRunning);
 
 // Bucle principal del reloj
 setInterval(() => {
@@ -64,7 +70,6 @@ function openAdminWithPass() {
     return;
   }
 
-  // Si ya estaba autenticado previamente en la sesión, no vuelve a pedir clave
   if (localStorage.getItem("admin_authenticated") === "true") {
     adminPanel.classList.add("open");
     return;
@@ -101,6 +106,7 @@ function setCustomTime() {
 function executeFullReset() {
   if (confirm("¿Seguro que querés reiniciar toda la sala para el siguiente grupo?")) {
     localStorage.clear();
+    // Al limpiar localStorage, volverá a tomar isTimerRunning = true automáticamente
     location.reload();
   }
 }
@@ -109,7 +115,6 @@ function executeFullReset() {
    ATAJOS DE TESTEO (SALTO ENTRE FASES)
 ========================================== */
 function jumpToPhase(target) {
-  // Ocultar todas las pantallas y desactivar pasitos del stepper
   document.querySelectorAll('.challenge-screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
 
@@ -171,7 +176,6 @@ window.addEventListener("DOMContentLoaded", () => {
   updateTimerDisplay();
   renderHints();
 
-  // Si el panel admin estaba abierto antes de recargar, mantenerlo abierto
   if (localStorage.getItem("admin_drawer_open") === "true") {
     document.getElementById("admin-panel").classList.add("open");
   }
