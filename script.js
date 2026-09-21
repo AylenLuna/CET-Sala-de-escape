@@ -1,224 +1,352 @@
-// CONSTANTES Y CONFIGURACIÓN INICIAL DE TIEMPO
-const DEFAULT_TIME = 20 * 60; // 20 minutos
+// ==========================================
+// CONFIGURACIÓN INICIAL Y CLAVES
+// ==========================================
+const DEFAULT_TIME = 20 * 60; // 20 minutos por defecto
 
-let timeRemaining = localStorage.getItem("pumm_timer") !== null 
-  ? parseInt(localStorage.getItem("pumm_timer")) 
+const correctAnswers = {
+  1: "ID_8032",
+  2: "31415H", // Resultado de las 6 casillas (3 - 1 - 4 - 1 - 5 - H)
+  3: "UPDATE_SIN_TEST",
+  4: "83157264"
+};
+
+const phaseHints = {
+  1: "Alguien de la guardia cometió un error grave e intentó ocultar las evidencias. Solo una mente lógica puede revelar el código de acceso entre el desorden.",
+  2: "Recuerden la regla de oro del centro: cuando la red falla, lo físico es el único refugio seguro. Un buen diagnóstico requiere filtrar la información irrelevante.",
+  3: "Cualquier cambio sin probar pone en riesgo la estabilidad del servidor. Busquen en el registro la acción no verificada que alteró el sistema.",
+  4: "Identificar el error no basta: para reparar el daño hay que seguir el protocolo correcto."
+};
+
+// ==========================================
+// LECTURA INICIAL DE LOCALSTORAGE (PERSISTENCIA)
+// ==========================================
+let currentPhase = parseInt(localStorage.getItem("pumm_current_phase")) || 1;
+let totalSeconds = localStorage.getItem("pumm_timer") !== null 
+  ? parseInt(localStorage.getItem("pumm_timer"), 10) 
   : DEFAULT_TIME;
 
-// Si no está definido previamente en localStorage, arranca en TRUE (en marcha)
-let isTimerRunning = localStorage.getItem("pumm_timer_running") !== null 
-  ? localStorage.getItem("pumm_timer_running") === "true" 
-  : true;
+let isTimerRunning = localStorage.getItem("pumm_timer_running") === "true";
 
-// Guardar el estado inicial para mantener coherencia
-localStorage.setItem("pumm_timer_running", isTimerRunning);
+let phaseHintsUnlocked = JSON.parse(localStorage.getItem("pumm_hints")) || {
+  1: false,
+  2: false,
+  3: false,
+  4: false
+};
 
-// Bucle principal del reloj
-setInterval(() => {
-  if (isTimerRunning && timeRemaining > 0) {
-    timeRemaining--;
-    localStorage.setItem("pumm_timer", timeRemaining);
-    updateTimerDisplay();
-    checkTriggerEvents();
-  } else if (isTimerRunning && timeRemaining === 0) {
-    // Si el tiempo llega a 0, pausamos y mostramos pantalla de Timeout
-    isTimerRunning = false;
-    localStorage.setItem("pumm_timer_running", "false");
-    updateTimerDisplay();
-    triggerTimeoutScreen();
+let timerInterval = null;
+
+// ==========================================
+// INICIALIZACIÓN DE PÁGINA
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  setupGuionInputs();
+  renderHints();
+  jumpToPhase(currentPhase, false); // Mostrar pantalla guardada sin reescribir
+  updateTimerDisplay();
+
+  // Si arrancó la primera vez o si ya estaba en marcha, iniciar el bucle
+  if (localStorage.getItem("pumm_timer_running") === null) {
+    startTimer(); // Primera ejecución del programa
+  } else if (isTimerRunning) {
+    resumeTimerInterval();
   }
-}, 1000);
+});
 
+function saveStateToLocalStorage() {
+  localStorage.setItem("pumm_current_phase", currentPhase);
+  localStorage.setItem("pumm_timer", totalSeconds);
+  localStorage.setItem("pumm_timer_running", isTimerRunning);
+  localStorage.setItem("pumm_hints", JSON.stringify(phaseHintsUnlocked));
+}
+
+// ==========================================
+// TEMPORIZADOR
+// ==========================================
 function updateTimerDisplay() {
-  const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
-  const s = (timeRemaining % 60).toString().padStart(2, '0');
-  
-  const timerElem = document.getElementById("timer");
-  if (timerElem) timerElem.textContent = `${m}:${s}`;
-  
-  const statusBadge = document.getElementById("timer-status");
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const timerEl = document.getElementById("timer");
+  if (timerEl) {
+    timerEl.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  }
+
   const playBtn = document.getElementById("play-pause-btn");
+  const statusBadge = document.getElementById("timer-status");
 
   if (isTimerRunning) {
-    if (statusBadge) {
-      statusBadge.textContent = "▶ EN MARCHA";
-      statusBadge.className = "status-badge running";
-    }
     if (playBtn) {
       playBtn.textContent = "⏸ PAUSAR";
-      playBtn.className = "admin-btn play-btn paused";
+      playBtn.classList.add("paused");
+    }
+    if (statusBadge) {
+      statusBadge.textContent = "▶ EN EJECUCIÓN";
+      statusBadge.classList.add("running");
     }
   } else {
-    if (statusBadge) {
-      statusBadge.textContent = "⏸ PAUSADO";
-      statusBadge.className = "status-badge";
-    }
     if (playBtn) {
       playBtn.textContent = "▶ INICIAR";
-      playBtn.className = "admin-btn play-btn";
+      playBtn.classList.remove("paused");
+    }
+    if (statusBadge) {
+      statusBadge.textContent = "⏸ PAUSADO";
+      statusBadge.classList.remove("running");
     }
   }
 }
 
-/* ==========================================
-   PANEL ADMIN & PERSISTENCIA (SÓLO SE CIERRA CON 'X')
-========================================== */
-function openAdminWithPass() {
-  const adminPanel = document.getElementById("admin-panel");
-  if (adminPanel.classList.contains("open")) {
-    toggleAdminPanel();
-    return;
-  }
-
-  if (localStorage.getItem("admin_authenticated") === "true") {
-    adminPanel.classList.add("open");
-    return;
-  }
-
-  const pass = prompt("CLAVE DE EMBAJADORA CET:");
-  if (pass === "REINICIO-CET") {
-    localStorage.setItem("admin_authenticated", "true");
-    adminPanel.classList.add("open");
-  } else if (pass !== null) {
-    alert("Clave incorrecta.");
-  }
+function startTimer() {
+  isTimerRunning = true;
+  saveStateToLocalStorage();
+  updateTimerDisplay();
+  resumeTimerInterval();
 }
 
-function toggleAdminPanel() {
-  document.getElementById("admin-panel").classList.toggle("open");
+function resumeTimerInterval() {
+  if (timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    if (isTimerRunning && totalSeconds > 0) {
+      totalSeconds--;
+      saveStateToLocalStorage();
+      updateTimerDisplay();
+    } else if (totalSeconds <= 0) {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      jumpToPhase("timeout");
+    }
+  }, 1000);
 }
 
-function toggleTimer() {
-  isTimerRunning = !isTimerRunning;
-  localStorage.setItem("pumm_timer_running", isTimerRunning);
+function pauseTimer() {
+  clearInterval(timerInterval);
+  isTimerRunning = false;
+  saveStateToLocalStorage();
   updateTimerDisplay();
 }
 
+function toggleTimer() {
+  if (isTimerRunning) {
+    pauseTimer();
+  } else {
+    startTimer();
+  }
+}
+
 function setCustomTime() {
-  const mins = parseInt(document.getElementById("custom-minutes").value);
-  if (!isNaN(mins) && mins >= 0) {
-    timeRemaining = mins * 60;
-    localStorage.setItem("pumm_timer", timeRemaining);
-    updateTimerDisplay();
+  const customInput = document.getElementById("custom-minutes");
+  if (customInput && customInput.value) {
+    const mins = parseInt(customInput.value, 10);
+    if (!isNaN(mins) && mins >= 0) {
+      totalSeconds = mins * 60;
+      saveStateToLocalStorage();
+      updateTimerDisplay();
+    }
   }
 }
 
-function executeFullReset() {
-  if (confirm("¿Seguro que querés reiniciar toda la sala para el siguiente grupo?")) {
-    localStorage.clear();
-    // Al limpiar localStorage, volverá a tomar isTimerRunning = true automáticamente
-    location.reload();
+// ==========================================
+// NAVEGACIÓN Y FASES
+// ==========================================
+function jumpToPhase(phase, save = true) {
+  document.querySelectorAll(".challenge-screen").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".dt-stepper .step").forEach(st => st.classList.remove("active"));
+
+  if (typeof phase === "number") {
+    currentPhase = phase;
+    const targetScreen = document.getElementById(`screen-${phase}`);
+    const targetStep = document.getElementById(`step-${phase}`);
+
+    if (targetScreen) targetScreen.classList.add("active");
+    if (targetStep) targetStep.classList.add("active");
+
+    updateHintButtonState();
+  } else if (phase === "success" || phase === "timeout") {
+    currentPhase = phase;
+    pauseTimer();
+    const targetScreen = document.getElementById(`screen-${phase}`);
+    if (targetScreen) targetScreen.classList.add("active");
+
+    const btnPista = document.getElementById("request-hint-btn");
+    if (btnPista) {
+      btnPista.disabled = true;
+      btnPista.innerText = "SISTEMA FINALIZADO";
+    }
+  }
+
+  if (save) {
+    saveStateToLocalStorage();
   }
 }
 
-/* ==========================================
-   ATAJOS DE TESTEO (SALTO ENTRE FASES)
-========================================== */
-function jumpToPhase(target) {
-  document.querySelectorAll('.challenge-screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+// ==========================================
+// VALIDACIONES DE CÓDIGO
+// ==========================================
+function checkCode(phase, expectedCode) {
+  const inputEl = document.getElementById(`code-${phase}`);
+  const errorEl = document.getElementById(`error-${phase}`);
 
-  if (typeof target === 'number') {
-    const screen = document.getElementById(`screen-${target}`);
-    const step = document.getElementById(`step-${target}`);
-    if (screen) screen.classList.add('active');
-    if (step) step.classList.add('active');
-  } else if (target === 'success') {
-    document.getElementById("screen-success").classList.add("active");
-  } else if (target === 'timeout') {
-    document.getElementById("screen-timeout").classList.add("active");
+  if (!inputEl || !errorEl) return;
+
+  const userCode = inputEl.value.trim().toUpperCase();
+
+  if (userCode === expectedCode) {
+    errorEl.textContent = "";
+    if (phase < 4) {
+      jumpToPhase(phase + 1);
+    } else {
+      jumpToPhase("success");
+    }
+  } else {
+    errorEl.textContent = "❌ CÓDIGO INCORRECTO. INTENTE NUEVAMENTE.";
   }
 }
 
-/* ==========================================
-   TRIGGER DE POPUPS Y EVENTOS DE TIEMPO
-========================================== */
-function checkTriggerEvents() {
-  // 5 min transcurridos (quedan 15 min -> 900s)
-  if (timeRemaining === 15 * 60 && !localStorage.getItem("popup_1_triggered")) {
-    triggerAllyModal(1);
-  }
-  // 10 min transcurridos (quedan 10 min -> 600s)
-  if (timeRemaining === 10 * 60 && !localStorage.getItem("popup_2_triggered")) {
-    triggerAllyModal(2);
-  }
-  // 15 min transcurridos (quedan 5 min -> 300s)
-  if (timeRemaining === 5 * 60 && !localStorage.getItem("popup_3_triggered")) {
-    triggerAllyModal(3);
+function checkGuionesCode() {
+  const casillas = document.querySelectorAll(".guion-input");
+  const errorEl = document.getElementById("error-2");
+
+  let userCode = "";
+  casillas.forEach(c => {
+    userCode += c.value.trim().toUpperCase();
+  });
+
+  if (userCode === correctAnswers[2]) {
+    errorEl.textContent = "";
+    jumpToPhase(3);
+  } else {
+    errorEl.textContent = "❌ CÓDIGO INCORRECTO. VERIFIQUE LAS RESPUESTAS.";
   }
 }
 
-let currentGameId = 1;
-function triggerAllyModal(gameId) {
-  currentGameId = gameId;
-  localStorage.setItem(`popup_${gameId}_triggered`, "true");
-  
+function setupGuionInputs() {
+  const casillas = document.querySelectorAll(".guion-input");
+  casillas.forEach((input, index) => {
+    input.addEventListener("input", (e) => {
+      if (e.target.value.length === 1 && index < casillas.length - 1) {
+        casillas[index + 1].focus();
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && !e.target.value && index > 0) {
+        casillas[index - 1].focus();
+      }
+    });
+  });
+}
+
+// ==========================================
+// PISTAS Y POPUPS
+// ==========================================
+function requestPhaseHint() {
+  if (typeof currentPhase !== "number") return;
+
+  if (phaseHintsUnlocked[currentPhase]) {
+    alert("⚠️ Ya han solicitado la pista correspondiente a esta fase.");
+    return;
+  }
+
+  openAllyModal();
+}
+
+function openAllyModal() {
   const modal = document.getElementById("ally-modal");
   if (modal) modal.classList.add("active");
 }
 
-function goToGame() {
+function closeAllyModal() {
   const modal = document.getElementById("ally-modal");
   if (modal) modal.classList.remove("active");
-  window.location.href = `games.html?game=${currentGameId}`;
 }
 
-function triggerTimeoutScreen() {
-  document.querySelectorAll('.challenge-screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  document.getElementById("screen-timeout").classList.add("active");
+function goToGame() {
+  closeAllyModal();
+  
+  // Selecciona al azar un juego entre el 1, 2 y 3
+  const randomGame = Math.floor(Math.random() * 3) + 1;
+  
+  // Redirige al juego guardando la fase actual
+  window.location.href = `games.html?game=${randomGame}&phase=${currentPhase}`;
 }
-
-/* ==========================================
-   INICIALIZACIÓN Y LÓGICA DE FASES
-========================================== */
-window.addEventListener("DOMContentLoaded", () => {
-  updateTimerDisplay();
-  renderHints();
-
-  if (localStorage.getItem("admin_drawer_open") === "true") {
-    document.getElementById("admin-panel").classList.add("open");
-  }
-});
 
 function renderHints() {
-  const hintsContainer = document.getElementById("hints-container");
-  const unlockedHints = JSON.parse(localStorage.getItem("unlocked_hints") || "[]");
+  const container = document.getElementById("hints-container");
+  if (!container) return;
 
-  if (!hintsContainer) return;
+  const unlockedPhases = Object.keys(phaseHintsUnlocked).filter(p => phaseHintsUnlocked[p]);
 
-  if (unlockedHints.length > 0) {
-    hintsContainer.innerHTML = "";
-    unlockedHints.forEach((hintText, index) => {
-      const card = document.createElement("div");
-      card.className = "hint-card";
-      card.innerHTML = `<strong>PISTA ${index + 1}:</strong> ${hintText}`;
-      hintsContainer.appendChild(card);
-    });
+  if (unlockedPhases.length === 0) {
+    container.innerHTML = `<p class="no-hints">Aún no han desbloqueado pistas de ayuda.</p>`;
+    return;
+  }
+
+  let html = "";
+  unlockedPhases.forEach(p => {
+    html += `
+      <div class="hint-card">
+        <strong>FASE 0${p}:</strong><br>
+        ${phaseHints[p]}
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function updateHintButtonState() {
+  const btnPista = document.getElementById("request-hint-btn");
+  if (!btnPista) return;
+
+  if (typeof currentPhase !== "number") {
+    btnPista.disabled = true;
+    btnPista.innerText = "SISTEMA FINALIZADO";
+    return;
+  }
+
+  if (phaseHintsUnlocked[currentPhase]) {
+    btnPista.disabled = true;
+    btnPista.innerText = "✓ PISTA OBTENIDA";
   } else {
-    hintsContainer.innerHTML = '<p class="no-hints">Aún no han desbloqueado pistas de ayuda.</p>';
+    btnPista.disabled = false;
+    btnPista.innerText = "💡 PEDIR PISTA";
   }
 }
 
-function checkCode(phase, code) {
-  const inputElem = document.getElementById(`code-${phase}`);
-  const errorMsg = document.getElementById(`error-${phase}`);
-  if (!inputElem) return;
+// ==========================================
+// CONTROL ADMINISTRATIVO
+// ==========================================
+function toggleAdminPanel() {
+  const panel = document.getElementById("admin-panel");
+  if (panel) panel.classList.toggle("open");
+}
 
-  const userVal = inputElem.value.trim().toUpperCase();
-
-  if (userVal === code.toUpperCase()) {
-    if (errorMsg) errorMsg.textContent = "";
-    document.getElementById(`screen-${phase}`).classList.remove("active");
-    document.getElementById(`step-${phase}`).classList.remove("active");
-    
-    if (phase < 4) {
-      document.getElementById(`screen-${phase + 1}`).classList.add("active");
-      document.getElementById(`step-${phase + 1}`).classList.add("active");
-    } else {
-      document.getElementById("screen-success").classList.add("active");
-    }
-  } else {
-    if (errorMsg) errorMsg.textContent = "❌ CÓDIGO INCORRECTO. REVISEN LAS PISTAS Y LA SALA.";
+function openAdminWithPass() {
+  const pass = prompt("Ingrese la clave de Administradora CET:");
+  if (pass === "REINICIO-CET") {
+    toggleAdminPanel();
+  } else if (pass !== null) {
+    alert("❌ Clave incorrecta.");
   }
 }
+
+function executeFullReset() {
+  if (confirm("¿Está segura de reiniciar toda la sala para el siguiente grupo?")) {
+    clearInterval(timerInterval);
+    localStorage.clear(); //
+    location.reload(); //[cite: 16]
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupGuionInputs();
+  renderHints();
+  jumpToPhase(currentPhase, false); // Mostrar pantalla guardada sin reescribir
+  updateTimerDisplay();
+
+  // 🔴 ASEGURAR QUE SE REANUDE EL CRONÓMETRO SI NO ESTÁ EN FASE FINAL
+  if (currentPhase !== "success" && currentPhase !== "timeout") {
+    isTimerRunning = true;
+    startTimer();
+  }
+});

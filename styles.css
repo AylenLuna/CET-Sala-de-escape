@@ -140,7 +140,6 @@ body {
 .admin-btn:hover { background-color: #30363d; }
 .play-btn { background-color: #238636; color: white; border: none; }
 .play-btn.paused { background-color: #da3633; }
-.test-btn { background-color: #1f6feb; color: white; border: none; }
 .reset-btn { background-color: #8957e5; color: white; border: none; }
 
 .time-inputs { display: flex; gap: 6px; }
@@ -154,13 +153,14 @@ body {
   border-radius: 4px;
 }
 
-/* Panel Central de Desafíos (AMPLIADO) */
+/* Panel Central de Desafíos */
 .app-window {
-  flex: 4; /* Le da el 80% del ancho */
+  flex: 1;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #30363d;
   background-color: #161b22;
+  position: relative;
 }
 
 .dt-stepper {
@@ -185,18 +185,19 @@ body {
 }
 
 .content-area {
-  padding: 40px;
+  padding: 30px;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow-y: auto;
 }
 
 .challenge-screen { display: none; }
 .challenge-screen.active { display: block; }
 
 h2 { color: #58a6ff; margin-bottom: 15px; }
-.instruction { font-size: 1.1rem; margin-bottom: 25px; line-height: 1.5; }
+.instruction { font-size: 1.05rem; margin-bottom: 20px; line-height: 1.5; }
 
 .input-group { display: flex; gap: 10px; margin-top: 20px; }
 
@@ -211,7 +212,7 @@ input[type="text"], input[type="password"] {
   text-transform: uppercase;
 }
 
-button {
+button.action-btn-main, .input-group button {
   background-color: #238636;
   color: white;
   border: none;
@@ -228,16 +229,166 @@ button:hover { background-color: #2ea043; }
   color: #ff7b72;
   margin-top: 15px;
   font-weight: bold;
-  height: 20px;
+  min-height: 20px;
 }
 
-/* Panel Lateral de Pistas (REDUCIDO A 250px) */
+/* FASE 2: CASILLAS Y TOOLTIPS */
+.codigo-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.casilla-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.guion-input {
+  width: 48px !important;
+  height: 58px;
+  text-align: center;
+  font-size: 1.6rem !important;
+  font-weight: bold;
+  background-color: #0d1117 !important;
+  border: 1px solid #30363d !important;
+  border-radius: 6px !important;
+  color: #7ee787 !important;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.guion-input:focus {
+  border-color: #58a6ff !important;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+}
+
+/* Tooltips Flotantes */
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: 190px;
+  background-color: #0d1117;
+  color: #f2e354;
+  text-align: center;
+  border: 1px solid #f2e354;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  font-family: 'Courier New', Courier, monospace;
+  position: absolute;
+  z-index: 20;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  pointer-events: none;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.7);
+}
+
+.tooltip-top {
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-bottom {
+  top: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-top::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #f2e354 transparent transparent transparent;
+}
+
+.tooltip-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #f2e354 transparent;
+}
+
+.casilla-wrapper:hover .tooltip,
+.casilla-wrapper:focus-within .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* CONSOLA TERMINAL */
+.terminal-box {
+  background-color: #000000;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.terminal-header {
+  background-color: #161b22;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #30363d;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.terminal-title {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-left: 10px;
+}
+
+.terminal-body {
+  padding: 15px;
+  color: #00ff00;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.scrollable-terminal {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.cmd-error {
+  color: #ff7b72 !important;
+  font-weight: bold;
+}
+
+.terminal-alert {
+  color: #f2e354 !important;
+  font-weight: bold;
+  background-color: rgba(242, 227, 84, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* PANEL LATERAL DE PISTAS (DERECHA) */
 .hints-panel {
-  width: 260px; /* Ancho fijo angosto */
+  width: 280px;
   flex: none;
   background-color: #0d1117;
   padding: 18px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #30363d;
 }
 
 .hints-panel h3 {
@@ -246,6 +397,11 @@ button:hover { background-color: #2ea043; }
   margin-bottom: 12px;
   border-bottom: 1px solid #30363d;
   padding-bottom: 6px;
+}
+
+#hints-container {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .hint-card {
@@ -263,6 +419,34 @@ button:hover { background-color: #2ea043; }
   font-size: 0.75rem;
   color: #8b949e;
   font-style: italic;
+}
+
+/* BOTÓN PEDIR PISTA EN EL PANEL LATERAL */
+.hint-btn-sidebar {
+  margin-top: auto;
+  background-color: #161b22;
+  border: 1px solid #f2e354;
+  color: #f2e354;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.hint-btn-sidebar:hover:not(:disabled) {
+  background-color: #f2e354;
+  color: #0d1117;
+}
+
+.hint-btn-sidebar:disabled {
+  border-color: #30363d;
+  color: #484f58;
+  background-color: #0d1117;
+  cursor: not-allowed;
 }
 
 /* Footer Admin */
@@ -323,168 +507,7 @@ button:hover { background-color: #2ea043; }
   width: 100%;
 }
 
-/* ==========================================
-   ESTILOS EXCLUSIVOS DE MINIJUEGOS (GAMES.HTML)
-========================================== */
-.games-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #0d1117;
-  height: 100vh;
-}
-
-.game-wrapper {
-  background-color: #161b22;
-  border: 2px solid #30363d;
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 650px;
-  width: 90%;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8);
-  text-align: center;
-}
-
-.game-header h2 { color: #f2e354; margin-bottom: 8px; }
-.game-header p { font-size: 0.9rem; color: #8b949e; margin-bottom: 20px; }
-
-/* Cable Game */
-.cables-container {
-  display: flex;
-  justify-content: space-between;
-  margin: 25px 0;
-  gap: 20px;
-}
-
-.cables-column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cables-column h3 { font-size: 0.8rem; color: #58a6ff; }
-
-.wire-item, .port-item {
-  padding: 12px;
-  border-radius: 6px;
-  border: 2px solid #30363d;
-  background-color: #0d1117;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: bold;
-  user-select: none;
-}
-
-.wire-item.active-selection { border-color: #f2e354; background-color: #21262d; }
-.port-item.connected { border-color: #238636; }
-.port-item .status { display: block; font-size: 0.65rem; color: #8b949e; margin-top: 4px; }
-
-/* Binary Game */
-.binary-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin: 20px 0;
-  background-color: #0d1117;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #30363d;
-}
-
-.bit-cell {
-  background-color: #161b22;
-  border: 1px solid #30363d;
-  padding: 12px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: default;
-}
-
-.bit-cell.anomaly {
-  background-color: #da3633;
-  color: white;
-  cursor: pointer;
-  animation: pulse 1s infinite alternate;
-}
-
-.bit-cell.repaired {
-  background-color: #238636;
-  color: white;
-}
-
-.counter-box {
-  font-size: 0.85rem;
-  color: #e3b341;
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-/* Sequence Game */
-.sequence-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin: 20px 0;
-}
-
-.seq-block {
-  background-color: #0d1117;
-  border: 2px solid #30363d;
-  padding: 18px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.seq-block.selected { border-color: #58a6ff; background-color: #21262d; }
-
-.action-btn {
-  background-color: #238636;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-}
-
-.game-error {
-  color: #ff7b72;
-  font-weight: bold;
-  font-size: 0.85rem;
-  margin-top: 15px;
-  height: 20px;
-}
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-  100% { transform: translateX(0); }
-}
-
-/* Atajos en Panel Admin */
-.shortcuts-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-
-.shortcuts-grid .admin-btn {
-  background-color: #30363d;
-  font-size: 0.7rem;
-  padding: 6px;
-}
-
-.shortcuts-grid .admin-btn:hover {
-  background-color: #58a6ff;
-  color: #0d1117;
-}
-
-/* Caja de Post-it e instrucciones finales */
+/* Post-it e instrucciones finales */
 .postit-instructions {
   background-color: #0d1117;
   border: 1px dashed #f2e354;
@@ -499,71 +522,13 @@ button:hover { background-color: #2ea043; }
   margin-bottom: 10px;
 }
 
-.postit-instructions ul {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 15px 0;
-}
-
-.postit-instructions li {
-  font-size: 0.95rem;
-  color: #e6edf3;
-  margin-bottom: 8px;
-  line-height: 1.4;
-}
-
 .postit-callout {
   color: #7ee787;
   font-size: 1rem;
   margin-top: 15px;
 }
 
-.timeout-title {
-  color: #ff7b72;
-  margin-bottom: 15px;
-}
-
-/* CONSOLA DE SÍMBOLO DE SISTEMA */
-.terminal-box {
-  background-color: #000000;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-family: 'Courier New', Courier, monospace;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-}
-
-.terminal-header {
-  background-color: #161b22;
-  padding: 6px 10px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #30363d;
-}
-
-.terminal-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-right: 6px;
-}
-
-.terminal-title {
-  font-size: 0.75rem;
-  color: #8b949e;
-  margin-left: 10px;
-}
-
-.terminal-body {
-  padding: 15px;
-  color: #00ff00;
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
-.terminal-body p {
-  margin: 0;
-}
+.timeout-title { color: #ff7b72; margin-bottom: 15px; }
 
 .cyber-options {
   text-align: left;
@@ -573,6 +538,196 @@ button:hover { background-color: #2ea043; }
   color: #c9d1d9;
 }
 
-.cyber-options li {
-  margin-bottom: 8px;
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.shortcuts-grid .admin-btn {
+  background-color: #30363d;
+  font-size: 0.7rem;
+  padding: 6px;
+}
+
+/* ==========================================
+   ESTILOS PARA MINIJUEGOS (GAMES)
+========================================== */
+.games-body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+.game-wrapper {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 650px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.game-header h2 {
+  color: #58a6ff;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.game-header p {
+  color: #8b949e;
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+}
+
+/* JUEGO 1: CABLES */
+.cables-container {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.cables-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cables-column h3 {
+  font-size: 0.85rem;
+  color: #8b949e;
+  margin-bottom: 5px;
+}
+
+.wire-item, .port-item {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.wire-item:hover, .port-item:hover {
+  border-color: #58a6ff;
+}
+
+.wire-item.active-selection {
+  border-color: #f2e354;
+  box-shadow: 0 0 8px rgba(242, 227, 84, 0.4);
+}
+
+.port-item .status {
+  float: right;
+  font-size: 0.75rem;
+  color: #8b949e;
+}
+
+.port-item.connected .status {
+  color: #7ee787;
+}
+
+/* JUEGO 2: BINARIO */
+.counter-box {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  padding: 10px;
+  border-radius: 6px;
+  color: #f2e354;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.binary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.bit-cell {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  padding: 15px 0;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  color: #7ee787;
+  font-family: monospace;
+}
+
+.bit-cell.repaired {
+  border-color: #238636;
+  background-color: rgba(35, 134, 54, 0.2);
+}
+
+/* JUEGO 3: SECUENCIA */
+.sequence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.seq-block {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #58a6ff;
+  user-select: none;
+}
+
+.seq-block.selected {
+  border-color: #f2e354;
+  background-color: rgba(242, 227, 84, 0.1);
+}
+
+/* BOTONES Y ERRORES DE JUEGOS */
+.action-btn {
+  background-color: #238636;
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-btn:hover {
+  background-color: #2ea043;
+}
+
+.game-error {
+  color: #ff7b72;
+  font-weight: bold;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
 }

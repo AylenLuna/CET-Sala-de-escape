@@ -28,7 +28,6 @@ function initCablesGame() {
         const portColor = port.getAttribute('data-color');
         connections[selectedWire] = portColor;
         
-        // Muestra el nombre en español del cable conectado sin regalar R/G/B
         port.querySelector('.status').textContent = `CONECTADO (${colorNamesEs[selectedWire]})`;
         port.classList.add('connected');
         
@@ -40,13 +39,12 @@ function initCablesGame() {
 }
 
 function validateCables() {
-  // Validación estricta R -> Canal R (red), G -> Canal G (green), B -> Canal B (blue)
   const isCorrect = connections['red'] === 'red' && 
                     connections['green'] === 'green' && 
                     connections['blue'] === 'blue';
 
   if (isCorrect) {
-    completeMinigame("PISTA REVELADA: Miren con la lupa la credencial del equipo técnico, el ID tiene detalles impresos en rojo.");
+    completeMinigame();
   } else {
     showError("❌ Conexión incorrecta. Sincronizá cada cable con su puerto de canal correspondiente.");
   }
@@ -66,7 +64,7 @@ function initBinaryGame() {
 
   for (let i = 0; i < 30; i++) {
     const bit = document.createElement('div');
-    bit.className = 'bit-cell'; // Apariencia estándar para todos sin regalar rojo
+    bit.className = 'bit-cell';
     
     if (Math.random() < 0.25 && totalAnomalies < 6) {
       bit.textContent = anomalies[Math.floor(Math.random() * anomalies.length)];
@@ -105,7 +103,7 @@ function updateAnomalyCounter() {
 
 function validateBinary() {
   if (totalAnomalies === 0) {
-    completeMinigame("PISTA REVELADA: El servidor afectado reporta la falla en el nodo SERVIDOR_CORE.");
+    completeMinigame();
   } else {
     showError(`❌ Aún quedan ${totalAnomalies} anomalías detectadas en el sistema.`);
   }
@@ -152,15 +150,22 @@ function validateSequence() {
   const isOrdered = sequenceState.every((val, index) => val === index + 1);
 
   if (isOrdered) {
-    completeMinigame("PISTA REVELADA: La acción no autorizada fue ejecutada a las 14:32 y tiene la etiqueta UPDATE_UNVERIFIED.");
+    completeMinigame();
   } else {
     showError("❌ La secuencia no está correctamente ordenada (debe quedar MÓDULO 01 a MÓDULO 04).");
   }
 }
 
 /* ==========================================
-   MÉTODOS AUXILIARES
+   MÉTODOS AUXILIARES Y PISTAS SEGÚN FASE
 ========================================== */
+const phaseHintsText = {
+  1: "Alguien de la guardia cometió un error grave e intentó ocultar las evidencias. Solo una mente lógica puede revelar el código de acceso entre el desorden.",
+  2: "Recuerden la regla de oro del centro: cuando la red falla, lo físico es el único refugio seguro. Un buen diagnóstico requiere filtrar la información irrelevante.",
+  3: "Cualquier cambio sin probar pone en riesgo la estabilidad del servidor. Busquen en el registro la acción no verificada que alteró el sistema.",
+  4: "Identificar el error no basta: para reparar el daño hay que seguir el protocolo correcto."
+};
+
 function showError(msg) {
   const errBox = document.getElementById('game-error-msg');
   if (!errBox) return;
@@ -170,12 +175,17 @@ function showError(msg) {
   errBox.style.animation = 'shake 0.3s ease';
 }
 
-function completeMinigame(hintText) {
-  let hints = JSON.parse(localStorage.getItem("unlocked_hints") || "[]");
-  if (!hints.includes(hintText)) {
-    hints.push(hintText);
-    localStorage.setItem("unlocked_hints", JSON.stringify(hints));
-  }
+function completeMinigame() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentPhase = parseInt(urlParams.get('phase')) || 1;
+
+  let hints = JSON.parse(localStorage.getItem("pumm_hints") || "{}");
+  hints[currentPhase] = true;
+  localStorage.setItem("pumm_hints", JSON.stringify(hints));
+
+  // 🔴 FORZAR A QUE EL CRONÓMETRO SIGA CORRIENDO AL REGRESAR
+  localStorage.setItem("pumm_timer_running", "true");
+
   window.location.href = "index.html";
 }
 
@@ -189,7 +199,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const titleElem = document.getElementById('game-title');
   const instructionElem = document.getElementById('game-instruction');
 
-  // Ocultar todos los minijuegos al arrancar
   const gameCables = document.getElementById('game-cables');
   const gameBinary = document.getElementById('game-binary');
   const gameSequence = document.getElementById('game-sequence');

@@ -42,14 +42,7 @@
             </div>
           </div>
 
-          <div class="admin-group">
-            <label>FORZAR PRUEBA DE POP-UPS:</label>
-            <button class="admin-btn test-btn" onclick="triggerAllyModal(1)">POPUP 5 MIN (JUEGO 1)</button>
-            <button class="admin-btn test-btn" onclick="triggerAllyModal(2)">POPUP 10 MIN (JUEGO 2)</button>
-            <button class="admin-btn test-btn" onclick="triggerAllyModal(3)">POPUP 15 MIN (JUEGO 3)</button>
-          </div>
-
-          <div class="admin-group">
+<div class="admin-group">
             <label>⚡ ATAJOS / SALTO DE FASES (TESTER):</label>
             <div class="shortcuts-grid">
               <button class="admin-btn" onclick="jumpToPhase(1)">FASE 1</button>
@@ -58,6 +51,15 @@
               <button class="admin-btn" onclick="jumpToPhase(4)">FASE 4</button>
               <button class="admin-btn" onclick="jumpToPhase('success')">ÉXITO</button>
               <button class="admin-btn" onclick="jumpToPhase('timeout')">TIMEOUT</button>
+            </div>
+          </div>
+
+          <div class="admin-group">
+            <label>🎮 PRUEBA DE MINIJUEGOS (ADMIN):</label>
+            <div class="shortcuts-grid">
+              <button class="admin-btn" onclick="window.location.href='games.html?game=1'">CABLES</button>
+              <button class="admin-btn" onclick="window.location.href='games.html?game=2'">BINARIO</button>
+              <button class="admin-btn" onclick="window.location.href='games.html?game=3'">SECUENCIA</button>
             </div>
           </div>
 
@@ -83,78 +85,97 @@
             <h2>🔒 FASE 01: ACCEDER AL SISTEMA</h2>
             <p class="instruction"></p>
             <div class="input-group">
-              <input type="text" id="code-1" placeholder="CÓDIGO DE ACCESO..." autocomplete="off">
+              <input type="text" id="code-1" placeholder="ID DE ACCESO..." autocomplete="off">
               <button onclick="checkCode(1, 'ID_8032')">INGRESAR</button>
             </div>
             <p class="error-msg" id="error-1"></p>
           </div>
 
-        <!-- FASE 2 -->
-        <div class="challenge-screen" id="screen-2">
-          <h2>🔍 FASE 02: LOCALIZAR LA FALLA</h2>
-          <p class="instruction">Ingrese el nombre del servidor crítico afectado.</p>
+          <!-- FASE 2 -->
+          <div class="challenge-screen" id="screen-2">
+            <h2>🔍 FASE 02: CLAVE DE INGRESO</h2>
+            <p class="instruction">Ingrese el código de 6 caracteres.</p>
+            
+            <!-- CASILLAS DE CÓDIGO CON TOOLTIPS HOVER -->
+            <div class="codigo-container">
+              <!-- Casilla 1 -->
+              <div class="casilla-wrapper">
+                <span class="tooltip tooltip-bottom">Último dígito del año que le dieron el premio Nobel a Marie Curie</span>
+                <input type="text" maxlength="1" class="guion-input" />
+              </div>
 
-          <!-- Consola Símbolo de Sistema (Estática) -->
-          <div class="terminal-box">
-            <div class="terminal-header">
-              <span class="terminal-dot red"></span>
-              <span class="terminal-dot yellow"></span>
-              <span class="terminal-dot green"></span>
-              <span class="terminal-title">cmd.exe - System Diagnostic Log</span>
+              <!-- Casillas 2 y 3 -->
+              <div class="casilla-wrapper">
+                <span class="tooltip tooltip-top">Momento del tiempo que empezó el incidente</span>
+                <input type="text" maxlength="1" class="guion-input" />
+              </div>
+              <div class="casilla-wrapper">
+                <span class="tooltip tooltip-top">Momento del tiempo que empezó el incidente</span>
+                <input type="text" maxlength="1" class="guion-input" />
+              </div>
+
+              <!-- Casillas 4 y 5 -->
+              <div class="casilla-wrapper">
+                <span class="tooltip tooltip-bottom">¿Qué número de misión Apollo llevó a la primera tripulación que llegó a la Luna?</span>
+                <input type="text" maxlength="1" class="guion-input" />
+              </div>
+              <div class="casilla-wrapper">
+                <span class="tooltip tooltip-bottom">¿Qué número de misión Apollo llevó a la primera tripulación que llegó a la Luna?</span>
+                <input type="text" maxlength="1" class="guion-input" />
+              </div>
+
+              <!-- Casilla 6 -->
+              <div class="casilla-wrapper">
+                <span class="tooltip tooltip-top">Inicial de la mujer que trabajó en el desarrollo de COBOL</span>
+                <input type="text" maxlength="1" class="guion-input" />
+              </div>
             </div>
-            <div class="terminal-body">
-              <p>> SYSTEM DIAGNOSTIC RUNNING...</p>
-              <p>> CHECKING SERVER NODES...</p>
-              <p>> NODE_01: ONLINE [OK]</p>
-              <p>> SERVIDOR_CORE: CRITICAL_FAIL - CORRUPTED SECTOR AT 0x88F</p>
-              <p>> NODE_03: ONLINE [OK]</p>
-              <p>> ENTER RESOLUTION KEY TO PROCEED...</p>
-            </div>
+
+            <button class="action-btn-main" onclick="checkGuionesCode()">CONFIRMAR CÓDIGO</button>
+            <p class="error-msg" id="error-2"></p>
           </div>
 
-          <div class="input-group">
-            <input type="text" id="code-2" placeholder="NOMBRE DEL SERVIDOR..." autocomplete="off">
-            <button onclick="checkCode(2, 'SERVIDOR_CORE')">CONFIRMAR</button>
-          </div>
-          <p class="error-msg" id="error-2"></p>
-        </div>
+          <!-- FASE 3 -->
+          <div class="challenge-screen" id="screen-3">
+            <h2>💡 FASE 03: ANALIZAR EVIDENCIAS</h2>
+            <p class="instruction">Examine la cola de registros e identifique el evento sospechoso ejecutado en el servidor.</p>
 
-        <!-- FASE 3 -->
-        <div class="challenge-screen" id="screen-3">
-          <h2>💡 FASE 03: ANALIZAR EVIDENCIAS</h2>
-          <p class="instruction">Identifique la acción sospechosa ejecutada en la terminal.</p>
-
-          <!-- Consola Símbolo de Sistema (Estática) -->
-          <div class="terminal-box">
-            <div class="terminal-header">
-              <span class="terminal-dot red"></span>
-              <span class="terminal-dot yellow"></span>
-              <span class="terminal-dot green"></span>
-              <span class="terminal-title">cmd.exe - Audit Event Viewer</span>
+            <div class="terminal-box">
+              <div class="terminal-header">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="terminal-title">cmd.exe - Visor de Eventos de Auditoría</span>
+              </div>
+              <div class="terminal-body scrollable-terminal">
+                <p>> REGISTRO 14:15:02 - INICIO_DE_SESION_ADMIN [OK]</p>
+                <p>> REGISTRO 14:18:22 - VERIFICACION_DE_RED [OK]</p>
+                <p>> REGISTRO 14:20:10 - COPIA_DE_SEGURIDAD_PROGRAMADA [EXITOSO]</p>
+                <p>> REGISTRO 14:22:45 - CONSULTA_ESTADO_NODO_01 [OK]</p>
+                <p>> REGISTRO 14:25:30 - Sincronizacion_Base_Datos_Remota [OK]</p>
+                <p class="cmd-error">> 'run_patch_v2' no se reconoce como un comando interno o externo, programa o archivo por lotes ejecutable.</p>
+                <p class="cmd-error">> 'force_deploy' no se reconoce como un comando interno o externo, programa o archivo por lotes ejecutable.</p>
+                <p class="terminal-alert">> REGISTRO 14:32:45 - EJECUTADO: UPDATE_SIN_TEST [ALERTA: SIN CHECKSUM]</p>
+                <p>> REGISTRO 14:34:11 - CONEXION_INTERRUMPIDA [DESCONECTADO]</p>
+                <p>> REGISTRO 14:35:00 - INTENTO_DE_RESTAURACION_FALLIDO</p>
+                <p>> REGISTRO 14:38:12 - SISTEMA_ENTRANDO_EN_MODO_RECUPERACION</p>
+              </div>
             </div>
-            <div class="terminal-body">
-              <p>> LOG EVENT 14:30:12 - USER_ADMIN LOGGED IN</p>
-              <p>> LOG EVENT 14:31:00 - BACKUP_SCHEDULED [SUCCESS]</p>
-              <p>> LOG EVENT 14:32:45 - EXECUTE: UPDATE_UNVERIFIED [ALERT: NO CHECKSUM]</p>
-              <p>> LOG EVENT 14:35:00 - CONNECTION TERMINATED</p>
-              <p>> ENTER TARGET ACTION TO PROCEED...</p>
-            </div>
-          </div>
 
-          <div class="input-group">
-            <input type="text" id="code-3" placeholder="ACCIÓN EJECUTADA..." autocomplete="off">
-            <button onclick="checkCode(3, 'UPDATE_UNVERIFIED')">VALIDAR</button>
+            <div class="input-group">
+              <input type="text" id="code-3" placeholder="ACCIÓN EJECUTADA..." autocomplete="off">
+              <button onclick="checkCode(3, 'UPDATE_SIN_TEST')">VALIDAR</button>
+            </div>
+            <p class="error-msg" id="error-3"></p>
           </div>
-          <p class="error-msg" id="error-3"></p>
-        </div>
 
           <!-- FASE 4 -->
           <div class="challenge-screen" id="screen-4">
             <h2>🛠️ FASE 04: RESTAURACIÓN</h2>
-            <p class="instruction">Contraseña de restauración.</p>
+            <p class="instruction">Ingrese el código final para proceder con la restauración del servidor.</p>
             <div class="input-group">
-              <input type="password" id="code-4" placeholder="••••••••••••" autocomplete="off">
-              <button onclick="checkCode(4, 'PUMM2026RESTORE')">RESTAURAR SISTEMA</button>
+              <input type="password" id="code-4" placeholder="••••••••" autocomplete="off">
+              <button onclick="checkCode(4, '83157264')">RESTAURAR SISTEMA</button>
             </div>
             <p class="error-msg" id="error-4"></p>
           </div>
@@ -163,18 +184,18 @@
           <div class="challenge-screen" id="screen-success">
             <h1 class="success-title">🎉 ¡SISTEMA PUMM RESTAURADO CON ÉXITO!</h1>
             <p class="instruction">
-              ¡Lo lograron! Gracias a su trabajo en equipo, pensamiento analítico y colaboración, lograron resolver los incidentes y recuperar la red de soporte.
+              ¡Lo lograron! Gracias a su trabajo en equipo y pensamiento analítico, recuperaron la red de soporte.
             </p>
             <div class="postit-instructions">
               <h3>📌 DESAFÍO FINAL DE CIBERSEGURIDAD</h3>
-              <p>Analicen las siguientes 5 opciones de seguridad y elijan las <strong>3 correctas / mejores</strong> para proteger la red de ahora en adelante:</p>
+              <p>Analicen las opciones de seguridad y elijan las <strong>3 mejores</strong> para proteger la red:</p>
               
               <ol class="cyber-options">
                 <li><strong>A)</strong> Utilizar autenticación de doble factor (2FA) y contraseñas robustas no compartidas.</li>
-                <li><strong>B)</strong> Guardar las credenciales en un archivo txt sin cifrar en el escritorio para acceso rápido.</li>
-                <li><strong>C)</strong> Ejecutar solo actualizaciones de software que provengan de fuentes verificadas y oficiales.</li>
-                <li><strong>D)</strong> Desactivar el firewall para que la red funcione más rápido sin interrupciones.</li>
-                <li><strong>E)</strong> Verificar la autenticidad e integridad de los accesos antes de otorgar permisos de administrador.</li>
+                <li><strong>B)</strong> Guardar las credenciales en un archivo txt sin cifrar en el escritorio.</li>
+                <li><strong>C)</strong> Ejecutar solo actualizaciones de software de fuentes verificadas y oficiales.</li>
+                <li><strong>D)</strong> Desactivar el firewall para que la red funcione más rápido.</li>
+                <li><strong>E)</strong> Verificar la autenticidad de los accesos antes de otorgar permisos de administrador.</li>
               </ol>
 
               <p class="postit-callout">✍️ <strong>Anoten las 3 letras elegidas en un Post-it y entréguenselo a su Embajadora CET.</strong></p>
@@ -185,18 +206,18 @@
           <div class="challenge-screen" id="screen-timeout">
             <h1 class="timeout-title">⏰ ¡TIEMPO AGOTADO! EL SISTEMA SE BLOQUEÓ</h1>
             <p class="instruction">
-              ¡No se desanimen! El trabajo bajo presión en tecnología es un aprendizaje constante. Lo más importante es analizar lo sucedido, iterar y prevenir futuros fallos.
+              ¡No se desanimen! Analicen lo sucedido para prevenir futuros fallos.
             </p>
             <div class="postit-instructions">
               <h3>📌 DESAFÍO FINAL DE CIBERSEGURIDAD</h3>
-              <p>Aunque el tiempo haya terminado, el aprendizaje continúa. Analicen las siguientes 5 opciones de seguridad y elijan las <strong>3 correctas / mejores</strong> para evitar futuros bloqueos:</p>
-              
+              <p>Analicen las opciones de seguridad y elijan las <strong>3 mejores</strong> para evitar futuros bloqueos:</p>
+
               <ol class="cyber-options">
                 <li><strong>A)</strong> Utilizar autenticación de doble factor (2FA) y contraseñas robustas no compartidas.</li>
-                <li><strong>B)</strong> Guardar las credenciales en un archivo txt sin cifrar en el escritorio para acceso rápido.</li>
-                <li><strong>C)</strong> Ejecutar solo actualizaciones de software que provengan de fuentes verificadas y oficiales.</li>
-                <li><strong>D)</strong> Desactivar el firewall para que la red funcione más rápido sin interrupciones.</li>
-                <li><strong>E)</strong> Verificar la autenticidad e integridad de los accesos antes de otorgar permisos de administrador.</li>
+                <li><strong>B)</strong> Guardar las credenciales en un archivo txt sin cifrar en el escritorio.</li>
+                <li><strong>C)</strong> Ejecutar solo actualizaciones de software de fuentes verificadas y oficiales.</li>
+                <li><strong>D)</strong> Desactivar el firewall para que la red funcione más rápido.</li>
+                <li><strong>E)</strong> Verificar la autenticidad de los accesos antes de otorgar permisos de administrador.</li>
               </ol>
 
               <p class="postit-callout">✍️ <strong>Anoten las 3 letras elegidas en un Post-it y entréguenselo a su Embajadora CET.</strong></p>
@@ -205,12 +226,16 @@
         </section>
       </main>
 
-      <!-- Panel Lateral de Pistas -->
+      <!-- Panel Lateral de Pistas (Alineado a la derecha con el botón dentro) -->
       <aside class="hints-panel">
         <h3>💡 PISTAS OBTENIDAS</h3>
         <div id="hints-container">
           <p class="no-hints">Aún no han desbloqueado pistas de ayuda.</p>
         </div>
+
+        <button class="hint-btn-sidebar" id="request-hint-btn" onclick="requestPhaseHint()">
+          💡 PEDIR PISTA <span id="hint-cooldown-timer"></span>
+        </button>
       </aside>
     </div>
 
@@ -225,7 +250,7 @@
     <div class="modal-card">
       <div class="ally-avatar">👩‍💻</div>
       <h2>¡ATENCIÓN INVESTIGADORAS!</h2>
-      <p>Hola, soy la mentora de soporte. Detecté que necesitan ayuda con las evidencias. Tengo una pista desbloqueada, pero deben ayudarme a reparar un circuito primero.</p>
+      <p id="modal-text">Para acceder a la pista de esta fase, primero deben ayudarme a reparar un circuito técnico en el minijuego.</p>
       <button class="modal-btn" onclick="goToGame()">IR AL DESAFÍO Y OBTENER PISTA</button>
     </div>
   </div>
