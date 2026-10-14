@@ -5,7 +5,7 @@ const DEFAULT_TIME = 20 * 60; // 20 minutos por defecto
 
 const correctAnswers = {
   1: "ID_8032",
-  2: "31415H", // Resultado de las 6 casillas (3 - 1 - 4 - 1 - 5 - H)
+  2: "1AM11G", // Resultado de las 6 casillas (3 - 1 - 4 - 1 - 5 - H)
   3: "UPDATE_SIN_TEST",
   4: "83157264"
 };
